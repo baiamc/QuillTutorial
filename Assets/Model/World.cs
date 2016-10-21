@@ -12,6 +12,24 @@ public class World {
         _height = height;
 
         _tiles = new Tile[_width, _height];
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                _tiles[x, y] = new Tile(this, x, y);
+            }
+        }
+    }
+
+    public Tile GetTileAt(int x, int y)
+    {
+        if (x > _width || x < 0 || y > _height || y < 0)
+        {
+            return null;
+        }
+
+        return _tiles[x, y];
     }
 
 }
