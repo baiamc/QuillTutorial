@@ -8,9 +8,6 @@ public class Tile
     TileType _tileType = TileType.Empty;
 
     World _world;
-    int _x;
-    int _y;
-
 
     LooseObject _looseObject;
     InstalledObject _installedObject;
@@ -29,21 +26,9 @@ public class Tile
         }
     }
 
-    public int X
-    {
-        get
-        {
-            return _x;
-        }
-    }
+    public int X { get; protected set; }
 
-    public int Y
-    {
-        get
-        {
-            return _y;
-        }
-    }
+    public int Y { get; protected set; }
 
     public delegate void TileTypeChangedEventHandler(Tile sender);
     public event TileTypeChangedEventHandler TileTypeChanged;
@@ -51,8 +36,8 @@ public class Tile
     public Tile(World world, int x, int y)
     {
         _world = world;
-        _x = x;
-        _y = y;
+        X = x;
+        Y = y;
 
     }
 

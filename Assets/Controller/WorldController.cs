@@ -26,6 +26,7 @@ public class WorldController : MonoBehaviour
                 };
 
                 tileGo.transform.position = new Vector3(x, y);
+                tileGo.transform.SetParent(this.transform, true);
 
                 tileGo.AddComponent<SpriteRenderer>();
                 _tileGameObjectMap.Add(tileData, tileGo);
@@ -35,17 +36,11 @@ public class WorldController : MonoBehaviour
 
         _world.RandomizeTiles();
     }
-
-    float _tileUpdateTimer = 2f;
+    
     // Update is called once per frame
     void Update()
     {
-        _tileUpdateTimer -= Time.deltaTime;
-        if (_tileUpdateTimer < 0)
-        {
-            _world.RandomizeTiles();
-            _tileUpdateTimer = 2f;
-        }
+        
     }
 
     public void TileTypeChanged(Tile tile)
