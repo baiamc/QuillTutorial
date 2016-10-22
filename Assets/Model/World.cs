@@ -63,7 +63,7 @@ public class World
 
     public Tile GetTileAt(int x, int y)
     {
-        if (x > Width || x < 0 || y > Height || y < 0)
+        if (x >= Width || x < 0 || y >= Height || y < 0)
         {
             return null;
         }
