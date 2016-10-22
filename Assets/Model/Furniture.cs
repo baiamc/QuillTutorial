@@ -29,7 +29,7 @@ public class Furniture {
     public delegate void FurnitureChangedHandler(Furniture obj);
     public event FurnitureChangedHandler FurnitureChanged;
 
-    public Func<Tile, bool> funcPositionValidation { get; protected set; }
+    public Func<Tile, bool> IsPositionValid { get; protected set; }
 
     protected void RaiseFurnitureChanged()
     {
@@ -51,14 +51,14 @@ public class Furniture {
             LinksToNeighbor = linksToNeighbor
         };
 
-        furn.funcPositionValidation = furn.IsValidPosition;
+        furn.IsPositionValid = furn.IsValidPosition;
 
         return furn;
     }
 
     static public Furniture PlaceInstance(Furniture proto, Tile tile)
     {
-        if (proto.funcPositionValidation(tile) == false)
+        if (proto.IsPositionValid(tile) == false)
         {
             Debug.LogError("PlaceInstance -- Position Validity Function returned FALSE.");
             return null;
@@ -71,7 +71,7 @@ public class Furniture {
             _width = proto._width,
             _height = proto._height,
             LinksToNeighbor = proto.LinksToNeighbor,
-            funcPositionValidation = proto.funcPositionValidation,
+            IsPositionValid = proto.IsPositionValid,
             Tile = tile
         };
 

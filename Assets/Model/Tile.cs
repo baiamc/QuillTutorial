@@ -43,6 +43,8 @@ public class Tile
         }
     }
 
+    public Job PendingFurnatureJob { get; set; }
+
     public delegate void TileTypeChangedEventHandler(Tile sender);
     public event TileTypeChangedEventHandler TileTypeChanged;
 

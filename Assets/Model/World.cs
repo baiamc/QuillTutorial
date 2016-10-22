@@ -9,8 +9,10 @@ public class World
     Dictionary<string, Furniture> _furniturePrototypes;
 
     public int Width { get; protected set; }
-
     public int Height { get; protected set; }
+
+    // TODO: Most likely replaced with a dedicated class for managing job queues
+    public Queue<Job> jobQueue;
 
     public delegate void FurnitureCreatedHandler(Furniture obj);
     public event FurnitureCreatedHandler FurnitureCreated;
@@ -41,6 +43,7 @@ public class World
         Height = height;
 
         _tiles = new Tile[Width, Height];
+        jobQueue = new Queue<Job>();
 
         for (int x = 0; x < width; x++)
         {
@@ -88,5 +91,10 @@ public class World
         }
         RaiseFurnitureCreated(obj);
         return true;
+    }
+
+    public bool IsFurnaturePlacementValid(string furnatureType, Tile tile)
+    {
+        return _furniturePrototypes[furnatureType].IsPositionValid(tile);
     }
 }

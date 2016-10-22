@@ -69,7 +69,22 @@ public class MouseController : MonoBehaviour
             {
                 if (_buildModeIsFurniture)
                 {
-                    WorldController.Instance.World.PlaceFurniture(_buildModeFurnitureType, tile);
+                    if (WorldController.Instance.World.IsFurnaturePlacementValid(_buildModeFurnitureType, tile) == false
+                        && tile.PendingFurnatureJob == null)
+                    {
+                        continue;
+                    }
+
+                    Job job = new Job(tile);
+                    tile.PendingFurnatureJob = job;
+                    string furnatureType = _buildModeFurnitureType;
+                    job.JobComplete += (j) => {
+                        WorldController.Instance.World.PlaceFurniture(furnatureType, tile);
+                        tile.PendingFurnatureJob = null;
+                        };
+                    job.JobCanceled += (j) => tile.PendingFurnatureJob = null;
+
+                    WorldController.Instance.World.jobQueue.Enqueue(job);
                                         
                 } else
                 {
