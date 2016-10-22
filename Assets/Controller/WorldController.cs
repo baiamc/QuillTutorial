@@ -10,8 +10,8 @@ public class WorldController : MonoBehaviour
     public Sprite FloorSprite;
 
     Dictionary<Tile, GameObject> _tileGameObjectMap;
-    Dictionary<InstalledObject, GameObject> _installedObjectGameObjectMap;
-    Dictionary<string, Sprite> _installedObjectSprites;
+    Dictionary<Furniture, GameObject> _furnitureGameObjectMap;
+    Dictionary<string, Sprite> _furnitureSprites;
 
     public World World { get; private set; }
 
@@ -24,15 +24,15 @@ public class WorldController : MonoBehaviour
             return;
         }
 
-        _installedObjectSprites = Resources.LoadAll<Sprite>("Images/InstalledObjects").ToDictionary(s => s.name);
+        _furnitureSprites = Resources.LoadAll<Sprite>("Images/Furniture").ToDictionary(s => s.name);
 
         Instance = this;
         World = new World();
 
-        World.InstalledObjectCreated += OnInstalledObjectCreated;
+        World.FurnitureCreated += OnFurnitureCreated;
 
         _tileGameObjectMap = new Dictionary<Tile, GameObject>();
-        _installedObjectGameObjectMap = new Dictionary<InstalledObject, GameObject>();
+        _furnitureGameObjectMap = new Dictionary<Furniture, GameObject>();
 
         // Create GameObject for each tile
         for (int x = 0; x < World.Width; x++)
@@ -100,7 +100,7 @@ public class WorldController : MonoBehaviour
         }
     }
 
-    public void OnInstalledObjectCreated(InstalledObject obj)
+    public void OnFurnitureCreated(Furniture obj)
     {
         // Create a GameObject linked to this data
 
@@ -108,67 +108,65 @@ public class WorldController : MonoBehaviour
 
         var tileGo = new GameObject
         {
-            name = obj.ObjectType + "_" + obj.Tile.X + "_" + obj.Tile.Y
+            name = obj.FurnitureType + "_" + obj.Tile.X + "_" + obj.Tile.Y
         };
 
         tileGo.transform.position = new Vector3(obj.Tile.X, obj.Tile.Y);
         tileGo.transform.SetParent(this.transform, true);
 
-        // FIXME: We assume that the object must be a wall, so use
-        // the hard coded reference to the wall sprite
         var tileSr = tileGo.AddComponent<SpriteRenderer>();
-        tileSr.sprite = GetSpriteForInstalledObject(obj);
-        tileSr.sortingLayerName = "InstalledObject";
+        tileSr.sprite = GetSpriteForFurniture(obj);
+        tileSr.sortingLayerName = "Furniture";
 
-        _installedObjectGameObjectMap.Add(obj, tileGo);
-        obj.InstalledObjectChanged += OnInstalledObjectChanged;
+        _furnitureGameObjectMap.Add(obj, tileGo);
+        obj.FurnitureChanged += OnFurnitureChanged;
     }
 
-    Sprite GetSpriteForInstalledObject(InstalledObject obj)
+    Sprite GetSpriteForFurniture(Furniture obj)
     {
         if (obj.LinksToNeighbor == false)
         {
-            return _installedObjectSprites[obj.ObjectType];
+            return _furnitureSprites[obj.FurnitureType];
         }
 
-        string spriteName = obj.ObjectType + "_";
+        string spriteName = obj.FurnitureType + "_";
 
         int x = obj.Tile.X;
         int y = obj.Tile.Y;
         // North, East, South, West
 
         Tile t = World.GetTileAt(x, y + 1);
-        if (t != null && t.InstalledObject != null && t.InstalledObject.ObjectType == obj.ObjectType)
+        if (t != null && t.Furniture != null && t.Furniture.FurnitureType == obj.FurnitureType)
         {
             spriteName += "N";
         }
         t = World.GetTileAt(x + 1, y);
-        if (t != null && t.InstalledObject != null && t.InstalledObject.ObjectType == obj.ObjectType)
+        if (t != null && t.Furniture != null && t.Furniture.FurnitureType == obj.FurnitureType)
         {
             spriteName += "E";
         }
         t = World.GetTileAt(x, y - 1);
-        if (t != null && t.InstalledObject != null && t.InstalledObject.ObjectType == obj.ObjectType)
+        if (t != null && t.Furniture != null && t.Furniture.FurnitureType == obj.FurnitureType)
         {
             spriteName += "S";
         }
         t = World.GetTileAt(x - 1, y);
-        if (t != null && t.InstalledObject != null && t.InstalledObject.ObjectType == obj.ObjectType)
+        if (t != null && t.Furniture != null && t.Furniture.FurnitureType == obj.FurnitureType)
         {
             spriteName += "W";
         }
 
-        if (_installedObjectSprites.ContainsKey(spriteName))
+        if (_furnitureSprites.ContainsKey(spriteName) == false)
         {
-            Debug.LogError("Could not find InstalledObject sprite with name: " + spriteName);
+            Debug.LogError("Could not find furniture sprite with name: " + spriteName);
             return null;
         }
 
-        return _installedObjectSprites[spriteName];
+        return _furnitureSprites[spriteName];
     }
 
-    private void OnInstalledObjectChanged(InstalledObject obj)
+    private void OnFurnitureChanged(Furniture obj)
     {
-        Debug.LogError("OnInstalledObjectChanged -- Not Implemented");
+        Debug.LogError("OnFurnitureChanged -- Not Implemented");
     }
 }

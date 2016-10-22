@@ -6,20 +6,20 @@ public class World
 {
 
     Tile[,] _tiles;
-    Dictionary<string, InstalledObject> _installedObjectPrototypes;
+    Dictionary<string, Furniture> _furniturePrototypes;
 
     public int Width { get; protected set; }
 
     public int Height { get; protected set; }
 
-    public delegate void InstalledObjectCreatedHandler(InstalledObject obj);
-    public event InstalledObjectCreatedHandler InstalledObjectCreated;
+    public delegate void FurnitureCreatedHandler(Furniture obj);
+    public event FurnitureCreatedHandler FurnitureCreated;
 
-    private void RaiseInstalledObjectCreated(InstalledObject obj)
+    private void RaiseFurnitureCreated(Furniture obj)
     {
-        if (InstalledObjectCreated != null)
+        if (FurnitureCreated != null)
         {
-            InstalledObjectCreated(obj);
+            FurnitureCreated(obj);
         }
     }
 
@@ -39,15 +39,15 @@ public class World
             }
         }
 
-        CreateInstalledObjectPrototypes();
+        CreateFurniturePrototypes();
     }
 
-    private void CreateInstalledObjectPrototypes()
+    private void CreateFurniturePrototypes()
     {
-        _installedObjectPrototypes = new Dictionary<string, InstalledObject>();
+        _furniturePrototypes = new Dictionary<string, Furniture>();
 
-        _installedObjectPrototypes.Add("Wall", 
-            InstalledObject.CreatePrototype("Wall", 0f, 1, 1, true));
+        _furniturePrototypes.Add("Wall", 
+            Furniture.CreatePrototype("Wall", 0f, 1, 1, true));
     }
 
     public void RandomizeTiles()
@@ -78,21 +78,21 @@ public class World
         return _tiles[x, y];
     }
 
-    public bool PlaceInstalledObject(string objectType, Tile tile)
+    public bool PlaceFurniture(string furnitureType, Tile tile)
     {
-        InstalledObject proto;
-        if (!_installedObjectPrototypes.TryGetValue(objectType, out proto))
+        Furniture proto;
+        if (!_furniturePrototypes.TryGetValue(furnitureType, out proto))
         {
-            Debug.LogError("installedObjectPrototypes doesn't contain a prto for key: " + objectType);
+            Debug.LogError("_furniturePrototypes doesn't contain a proto for key: " + furnitureType);
             return false;
         }
 
-        var obj = InstalledObject.PlaceObject(proto, tile);
+        var obj = Furniture.PlaceFurniture(proto, tile);
         if (obj == null)
         {
             return false;
         }
-        RaiseInstalledObjectCreated(obj);
+        RaiseFurnitureCreated(obj);
         return true;
     }
 }

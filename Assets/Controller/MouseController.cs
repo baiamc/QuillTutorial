@@ -15,9 +15,9 @@ public class MouseController : MonoBehaviour
 
     List<GameObject> _dragPreviewGameObjects;
 
-    bool _buildModeIsObject = false;
+    bool _buildModeIsFurniture = false;
     TileType _buildModeTile = TileType.Floor;
-    private string _buildModeObjectType;
+    private string _buildModeFurnitureType;
 
     // Use this for initialization
     void Start()
@@ -67,9 +67,9 @@ public class MouseController : MonoBehaviour
         {
             foreach (var tile in GetDragArea())
             {
-                if (_buildModeIsObject)
+                if (_buildModeIsFurniture)
                 {
-                    WorldController.Instance.World.PlaceInstalledObject(_buildModeObjectType, tile);
+                    WorldController.Instance.World.PlaceFurniture(_buildModeFurnitureType, tile);
                                         
                 } else
                 {
@@ -121,19 +121,19 @@ public class MouseController : MonoBehaviour
 
     public void SetMode_BuildFloor()
     {
-        _buildModeIsObject = false;
+        _buildModeIsFurniture = false;
         _buildModeTile = TileType.Floor;
     }
 
     public void SetMode_Bulldoze()
     {
-        _buildModeIsObject = false;
+        _buildModeIsFurniture = false;
         _buildModeTile = TileType.Empty;
     }
 
-    public void SetMode_BuildInstalledObject(string objectType)
+    public void SetMode_BuildFurniture(string furnitureType)
     {
-        _buildModeIsObject = true;
-        _buildModeObjectType = objectType;
+        _buildModeIsFurniture = true;
+        _buildModeFurnitureType = furnitureType;
     }
 }

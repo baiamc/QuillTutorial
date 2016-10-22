@@ -10,8 +10,8 @@ public class Tile
 
     World _world;
 
-    LooseObject _looseObject;
-    InstalledObject _installedObject;
+    Inventory _inventory;
+    Furniture _furniture;
 
 
     public TileType TileType
@@ -32,11 +32,11 @@ public class Tile
 
     public int Y { get; protected set; }
 
-    public InstalledObject InstalledObject
+    public Furniture Furniture
     {
         get
         {
-            return _installedObject;
+            return _furniture;
         }
     }
 
@@ -59,21 +59,21 @@ public class Tile
         }
     }
 
-    public bool PlaceObject(InstalledObject objInstance)
+    public bool PlaceFurniture(Furniture objInstance)
     {
         if (objInstance == null)
         {
-            // Uninstall object
-            _installedObject = null;
+            // Uninstall furniture
+            _furniture = null;
             return true;
         }
-        if (InstalledObject != null)
+        if (Furniture != null)
         {
-            Debug.LogError("Trying to assign an installed object to a tile that already has one!");
+            Debug.LogError("Trying to assign furniture to a tile that already has one!");
             return false;
         }
 
-        _installedObject = objInstance;
+        _furniture = objInstance;
         return true;
     }
 }
