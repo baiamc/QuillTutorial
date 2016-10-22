@@ -15,24 +15,43 @@ public class InstalledObject {
     int _width;
     int _height;
 
-    // Used by object factory to create the prototypical object
-    public InstalledObject(string objectType, float movementCost = 1f, int width = 1, int height = 1)
+    // TODO: Implement larger objects
+    // TODO: Implement object rotation
+
+    protected InstalledObject()
     {
-        _objectType = objectType;
-        _movementCost = movementCost;
-        _width = width;
-        _height = height;
+
     }
 
-    public InstalledObject(InstalledObject proto, Tile tile)
+    // Used by object factory to create the prototypical object
+    static public InstalledObject CreatePrototype(string objectType, float movementCost = 1f, int width = 1, int height = 1)
     {
-        _objectType = proto._objectType;
-        _movementCost = proto._movementCost;
-        _width = proto._width;
-        _height = proto._height;
+        return new InstalledObject
+        {
+            _objectType = objectType,
+            _movementCost = movementCost,
+            _width = width,
+            _height = height,
+        };
+    }
 
-        _tile = tile;
-        tile._installedObject = this;
+    static public InstalledObject PlaceObject(InstalledObject proto, Tile tile)
+    {
+        var obj = new InstalledObject
+        {
+            _objectType = proto._objectType,
+            _movementCost = proto._movementCost,
+            _width = proto._width,
+            _height = proto._height,
+            _tile = tile
+        };
+
+        if (!tile.PlaceObject(obj))
+        {
+            return null;
+        }
+
+        return obj;
     }
 
 }

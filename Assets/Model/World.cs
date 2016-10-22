@@ -1,36 +1,22 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public class World
 {
 
     Tile[,] _tiles;
-    int _width;
-    int _height;
+    Dictionary<string, InstalledObject> _installedObjectPrototypes;
 
-    public int Width
-    {
-        get
-        {
-            return _width;
-        }
+    public int Width { get; protected set; }
 
-    }
+    public int Height { get; protected set; }
 
-    public int Height
-    {
-        get
-        {
-            return _height;
-        }
-
-    }
 
     public World(int width = 100, int height = 100)
     {
-        _width = width;
-        _height = height;
+        Width = width;
+        Height = height;
 
         _tiles = new Tile[Width, Height];
 
@@ -41,13 +27,23 @@ public class World
                 _tiles[x, y] = new Tile(this, x, y);
             }
         }
+
+        CreateInstalledObjectPrototypes();
+    }
+
+    private void CreateInstalledObjectPrototypes()
+    {
+        _installedObjectPrototypes = new Dictionary<string, InstalledObject>();
+
+        _installedObjectPrototypes.Add("Wall", 
+            InstalledObject.CreatePrototype("Wall", 0f));
     }
 
     public void RandomizeTiles()
     {
-        for (int x = 0; x < _width; x++)
+        for (int x = 0; x < Width; x++)
         {
-            for (int y = 0; y < _height; y++)
+            for (int y = 0; y < Height; y++)
             {
                 if (Random.Range(0, 2) == 0)
                 {
@@ -69,5 +65,10 @@ public class World
         }
 
         return _tiles[x, y];
+    }
+
+    internal void PlaceInstalledObject(string _buildModeObjectType, Tile tile)
+    {
+        throw new NotImplementedException();
     }
 }

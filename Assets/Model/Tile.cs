@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using UnityEngine;
+using System.Collections;
 
 public enum TileType { Empty, Floor }
 
@@ -11,6 +12,7 @@ public class Tile
 
     LooseObject _looseObject;
     InstalledObject _installedObject;
+
 
     public TileType TileType
     {
@@ -47,5 +49,23 @@ public class Tile
         {
             TileTypeChanged(this);
         }
+    }
+
+    public bool PlaceObject(InstalledObject objInstance)
+    {
+        if (objInstance == null)
+        {
+            // Uninstall object
+            _installedObject = null;
+            return true;
+        }
+        if (_installedObject != null)
+        {
+            Debug.LogError("Trying to assign an installed object to a tile that already has one!");
+            return false;
+        }
+
+        _installedObject = objInstance;
+        return true;
     }
 }
