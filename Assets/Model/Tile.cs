@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public enum TileType { Empty, Floor }
 
@@ -27,6 +28,8 @@ public class Tile
             RaiseTileTypeChanged();
         }
     }
+
+    public World World { get { return _world; } }
 
     public int X { get; protected set; }
 
@@ -75,5 +78,32 @@ public class Tile
 
         _furniture = objInstance;
         return true;
+    }
+
+    public IEnumerable<Tile> GetNeighbors()
+    {
+        Tile t = World.GetTileAt(X, Y + 1);
+        if (t != null)
+        {
+            yield return t;
+        }
+
+        t = World.GetTileAt(X + 1, Y);
+        if (t != null)
+        {
+            yield return t;
+        }
+
+        t = World.GetTileAt(X, Y - 1);
+        if (t != null)
+        {
+            yield return t;
+        }
+
+        t = World.GetTileAt(X - 1, Y);
+        if (t != null)
+        {
+            yield return t;
+        }
     }
 }

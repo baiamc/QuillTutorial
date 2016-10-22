@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Linq;
 
 public class Furniture {
 
@@ -49,9 +50,9 @@ public class Furniture {
         };
     }
 
-    static public Furniture PlaceFurniture(Furniture proto, Tile tile)
+    static public Furniture PlaceInstance(Furniture proto, Tile tile)
     {
-        var obj = new Furniture
+        var furn = new Furniture
         {
             FurnitureType = proto.FurnitureType,
             _movementCost = proto._movementCost,
@@ -61,12 +62,23 @@ public class Furniture {
             Tile = tile
         };
 
-        if (!tile.PlaceFurniture(obj))
+        if (!tile.PlaceFurniture(furn))
         {
             return null;
         }
 
-        return obj;
+        if (furn.LinksToNeighbor)
+        {
+            foreach (var t in tile.GetNeighbors())
+            {
+                if (t.Furniture != null && t.Furniture.FurnitureType == furn.FurnitureType)
+                {
+                    t.Furniture.RaiseFurnitureChanged();
+                }
+            }
+        }
+
+        return furn;
     }
 
 }

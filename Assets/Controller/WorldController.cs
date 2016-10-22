@@ -165,8 +165,10 @@ public class WorldController : MonoBehaviour
         return _furnitureSprites[spriteName];
     }
 
-    private void OnFurnitureChanged(Furniture obj)
+    private void OnFurnitureChanged(Furniture furn)
     {
-        Debug.LogError("OnFurnitureChanged -- Not Implemented");
+        // Make sure the furniture's graphics are correct
+        GameObject furn_go = _furnitureGameObjectMap[furn];
+        furn_go.GetComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(furn);
     }
 }

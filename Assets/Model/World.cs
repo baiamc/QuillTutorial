@@ -87,7 +87,7 @@ public class World
             return false;
         }
 
-        var obj = Furniture.PlaceFurniture(proto, tile);
+        var obj = Furniture.PlaceInstance(proto, tile);
         if (obj == null)
         {
             return false;
