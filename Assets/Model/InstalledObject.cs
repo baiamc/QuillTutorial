@@ -7,6 +7,7 @@ public class InstalledObject {
     public Tile Tile { get; protected set; }  
 
     public string ObjectType { get; protected set; }
+    public bool LinksToNeighbor { get; protected set; }
 
     // This is a multiplier so a value of 2 means you move twice as slowly (ie at half speed)
     // SPECIAL: If _movementCost is 0, then this tile is impassible (e.g. a wall)
@@ -36,7 +37,7 @@ public class InstalledObject {
 
 
     // Used by object factory to create the prototypical object
-    static public InstalledObject CreatePrototype(string objectType, float movementCost = 1f, int width = 1, int height = 1)
+    static public InstalledObject CreatePrototype(string objectType, float movementCost = 1f, int width = 1, int height = 1, bool linksToNeighbor = false)
     {
         return new InstalledObject
         {
@@ -44,6 +45,7 @@ public class InstalledObject {
             _movementCost = movementCost,
             _width = width,
             _height = height,
+            LinksToNeighbor = linksToNeighbor
         };
     }
 
@@ -55,6 +57,7 @@ public class InstalledObject {
             _movementCost = proto._movementCost,
             _width = proto._width,
             _height = proto._height,
+            LinksToNeighbor = proto.LinksToNeighbor,
             Tile = tile
         };
 

@@ -32,6 +32,14 @@ public class Tile
 
     public int Y { get; protected set; }
 
+    public InstalledObject InstalledObject
+    {
+        get
+        {
+            return _installedObject;
+        }
+    }
+
     public delegate void TileTypeChangedEventHandler(Tile sender);
     public event TileTypeChangedEventHandler TileTypeChanged;
 
@@ -59,7 +67,7 @@ public class Tile
             _installedObject = null;
             return true;
         }
-        if (_installedObject != null)
+        if (InstalledObject != null)
         {
             Debug.LogError("Trying to assign an installed object to a tile that already has one!");
             return false;

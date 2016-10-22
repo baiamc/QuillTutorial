@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 using System;
 
 public class WorldController : MonoBehaviour
@@ -7,10 +8,10 @@ public class WorldController : MonoBehaviour
     public static WorldController Instance { get; private set; }
 
     public Sprite FloorSprite;
-    public Sprite WallSprite; // FIXME
 
     Dictionary<Tile, GameObject> _tileGameObjectMap;
     Dictionary<InstalledObject, GameObject> _installedObjectGameObjectMap;
+    Dictionary<string, Sprite> _installedObjectSprites;
 
     public World World { get; private set; }
 
@@ -22,6 +23,9 @@ public class WorldController : MonoBehaviour
             Debug.LogError("Should not be multiple instances of WorldController.");
             return;
         }
+
+        _installedObjectSprites = Resources.LoadAll<Sprite>("Images/InstalledObjects").ToDictionary(s => s.name);
+
         Instance = this;
         World = new World();
 
@@ -113,11 +117,54 @@ public class WorldController : MonoBehaviour
         // FIXME: We assume that the object must be a wall, so use
         // the hard coded reference to the wall sprite
         var tileSr = tileGo.AddComponent<SpriteRenderer>();
-        tileSr.sprite = WallSprite;
+        tileSr.sprite = GetSpriteForInstalledObject(obj);
         tileSr.sortingLayerName = "InstalledObject";
 
         _installedObjectGameObjectMap.Add(obj, tileGo);
         obj.InstalledObjectChanged += OnInstalledObjectChanged;
+    }
+
+    Sprite GetSpriteForInstalledObject(InstalledObject obj)
+    {
+        if (obj.LinksToNeighbor == false)
+        {
+            return _installedObjectSprites[obj.ObjectType];
+        }
+
+        string spriteName = obj.ObjectType + "_";
+
+        int x = obj.Tile.X;
+        int y = obj.Tile.Y;
+        // North, East, South, West
+
+        Tile t = World.GetTileAt(x, y + 1);
+        if (t != null && t.InstalledObject != null && t.InstalledObject.ObjectType == obj.ObjectType)
+        {
+            spriteName += "N";
+        }
+        t = World.GetTileAt(x + 1, y);
+        if (t != null && t.InstalledObject != null && t.InstalledObject.ObjectType == obj.ObjectType)
+        {
+            spriteName += "E";
+        }
+        t = World.GetTileAt(x, y - 1);
+        if (t != null && t.InstalledObject != null && t.InstalledObject.ObjectType == obj.ObjectType)
+        {
+            spriteName += "S";
+        }
+        t = World.GetTileAt(x - 1, y);
+        if (t != null && t.InstalledObject != null && t.InstalledObject.ObjectType == obj.ObjectType)
+        {
+            spriteName += "W";
+        }
+
+        if (_installedObjectSprites.ContainsKey(spriteName))
+        {
+            Debug.LogError("Could not find InstalledObject sprite with name: " + spriteName);
+            return null;
+        }
+
+        return _installedObjectSprites[spriteName];
     }
 
     private void OnInstalledObjectChanged(InstalledObject obj)
