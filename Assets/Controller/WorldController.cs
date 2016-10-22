@@ -56,7 +56,7 @@ public class WorldController : MonoBehaviour
     {
         int x = Mathf.RoundToInt(coord.x);
         int y = Mathf.RoundToInt(coord.y);
-        return WorldController.Instance.World.GetTileAt(x, y);
+        return World.GetTileAt(x, y);
     }
 
     public void TileTypeChanged(Tile tile)

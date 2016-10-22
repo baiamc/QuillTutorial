@@ -1,43 +1,33 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 using System;
 
 public class MouseController : MonoBehaviour
 {
 
-    public GameObject CircleCursor;
-
-    // Use this for initialization
-    void Start()
-    {
-
-    }
+    public GameObject CircleCursorPrefab;
 
     Vector3 _currentMousePosition;
     Vector3 _lastFrameMousePosition;
     Vector3 _leftClickDragStart;
 
+    List<GameObject> _dragPreviewGameObjects;
+
+    // Use this for initialization
+    void Start()
+    {
+        _dragPreviewGameObjects = new List<GameObject>();
+    }
+
     // Update is called once per frame
     void Update()
     {
         _currentMousePosition = GetMouseWorldCoords();
-        HandleCursorPosition();
         HandleLeftClick();
-        HandleMouseScrolling();
+        HanldeCameraMovement();
 
         _lastFrameMousePosition = GetMouseWorldCoords();
-    }
-
-    private void HandleCursorPosition()
-    {
-        var tile = GetTileAtWorldCoords(_currentMousePosition);
-        if (tile == null)
-        {
-            CircleCursor.SetActive(false);
-            return;
-        }
-        CircleCursor.transform.position = new Vector3(tile.X, tile.Y);
-        CircleCursor.SetActive(true);
     }
 
     private void HandleLeftClick()
@@ -46,37 +36,61 @@ public class MouseController : MonoBehaviour
         {
             _leftClickDragStart = _currentMousePosition;
         }
+
+        // Clean old drag previews
+        _dragPreviewGameObjects.ForEach(SimplePool.Despawn);
+        _dragPreviewGameObjects.Clear();
+
+        if (Input.GetMouseButton(0))
+        {
+            foreach (var tile in GetDragArea())
+            {
+                var go = SimplePool.Spawn(CircleCursorPrefab, new Vector3(tile.X, tile.Y), Quaternion.identity);
+                go.transform.SetParent(this.transform);
+                _dragPreviewGameObjects.Add(go);
+            }
+        }
+
         if (Input.GetMouseButtonUp(0))
         {
-            int startX = Mathf.RoundToInt(Mathf.Min(_leftClickDragStart.x, _currentMousePosition.x));
-            int endX = Mathf.RoundToInt(Mathf.Max(_leftClickDragStart.x, _currentMousePosition.x));
-            int startY = Mathf.RoundToInt(Mathf.Min(_leftClickDragStart.y, _currentMousePosition.y));
-            int endY = Mathf.RoundToInt(Mathf.Max(_leftClickDragStart.y, _currentMousePosition.y));
-
-            for (int x = startX; x <= endX; x++)
+            foreach (var tile in GetDragArea())
             {
-                for (int y = startY; y <= endY; y++)
+                tile.TileType = TileType.Floor;
+            }
+        }
+    }
+
+    private IEnumerable<Tile> GetDragArea()
+    {
+        int startX = Mathf.RoundToInt(Mathf.Min(_leftClickDragStart.x, _currentMousePosition.x));
+        int endX = Mathf.RoundToInt(Mathf.Max(_leftClickDragStart.x, _currentMousePosition.x));
+        int startY = Mathf.RoundToInt(Mathf.Min(_leftClickDragStart.y, _currentMousePosition.y));
+        int endY = Mathf.RoundToInt(Mathf.Max(_leftClickDragStart.y, _currentMousePosition.y));
+
+        for (int x = startX; x <= endX; x++)
+        {
+            for (int y = startY; y <= endY; y++)
+            {
+                Tile tile = WorldController.Instance.World.GetTileAt(x, y);
+                if (tile != null)
                 {
-                    Tile tile = WorldController.Instance.World.GetTileAt(x, y);
-                    if (tile == null)
-                    {
-                        return;
-                    }
-
-                    tile.TileType = TileType.Floor;
-
+                    yield return tile;
                 }
             }
         }
     }
 
-    private void HandleMouseScrolling()
+    private void HanldeCameraMovement()
     {
         if (Input.GetMouseButton(1) || Input.GetMouseButton(2))
         {
             var diff = _lastFrameMousePosition - _currentMousePosition;
             Camera.main.transform.Translate(diff);
         }
+
+        Camera.main.orthographicSize -= Camera.main.orthographicSize * Input.GetAxis("Mouse ScrollWheel");
+
+        Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize, 3f, 25f);
     }
 
     private Vector3 GetMouseWorldCoords()
@@ -84,12 +98,5 @@ public class MouseController : MonoBehaviour
         var vector = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         vector.z = 0;
         return vector;
-    }
-
-    private Tile GetTileAtWorldCoords(Vector3 coord)
-    {
-        int x = Mathf.RoundToInt(coord.x);
-        int y = Mathf.RoundToInt(coord.y);
-        return WorldController.Instance.World.GetTileAt(x, y);
     }
 }
