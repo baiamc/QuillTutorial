@@ -50,24 +50,6 @@ public class World
             Furniture.CreatePrototype("Wall", 0f, 1, 1, true));
     }
 
-    public void RandomizeTiles()
-    {
-        for (int x = 0; x < Width; x++)
-        {
-            for (int y = 0; y < Height; y++)
-            {
-                if (UnityEngine.Random.Range(0, 2) == 0)
-                {
-                    _tiles[x, y].TileType = TileType.Empty;
-                }
-                else
-                {
-                    _tiles[x, y].TileType = TileType.Floor;
-                }
-            }
-        }
-    }
-
     public Tile GetTileAt(int x, int y)
     {
         if (x >= Width || x < 0 || y >= Height || y < 0)

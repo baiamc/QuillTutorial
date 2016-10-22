@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Linq;
+using System;
 
 public class Furniture {
 
@@ -28,6 +29,8 @@ public class Furniture {
     public delegate void FurnitureChangedHandler(Furniture obj);
     public event FurnitureChangedHandler FurnitureChanged;
 
+    public Func<Tile, bool> funcPositionValidation { get; protected set; }
+
     protected void RaiseFurnitureChanged()
     {
         if (FurnitureChanged != null)
@@ -36,11 +39,10 @@ public class Furniture {
         }
     }
 
-
     // Used by object factory to create the prototypical furniture
     static public Furniture CreatePrototype(string furnitureType, float movementCost = 1f, int width = 1, int height = 1, bool linksToNeighbor = false)
     {
-        return new Furniture
+        var furn = new Furniture
         {
             FurnitureType = furnitureType,
             _movementCost = movementCost,
@@ -48,10 +50,20 @@ public class Furniture {
             _height = height,
             LinksToNeighbor = linksToNeighbor
         };
+
+        furn.funcPositionValidation = furn.IsValidPosition;
+
+        return furn;
     }
 
     static public Furniture PlaceInstance(Furniture proto, Tile tile)
     {
+        if (proto.funcPositionValidation(tile) == false)
+        {
+            Debug.LogError("PlaceInstance -- Position Validity Function returned FALSE.");
+            return null;
+        }
+
         var furn = new Furniture
         {
             FurnitureType = proto.FurnitureType,
@@ -59,6 +71,7 @@ public class Furniture {
             _width = proto._width,
             _height = proto._height,
             LinksToNeighbor = proto.LinksToNeighbor,
+            funcPositionValidation = proto.funcPositionValidation,
             Tile = tile
         };
 
@@ -79,6 +92,34 @@ public class Furniture {
         }
 
         return furn;
+    }
+
+    public bool IsValidPosition(Tile tile)
+    {
+        // Make sure tile is FLOOR
+        // Make sure tile in empty
+        if (tile.TileType != TileType.Floor)
+        {
+            return false;
+        }
+
+        if (tile.Furniture != null)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public bool IsValidPosition_Door(Tile tile)
+    {
+        // Must have valid N/S Walls or E/W Walls
+        if (IsValidPosition(tile) == false) 
+        {
+            return false;
+        }
+
+        return true;
     }
 
 }

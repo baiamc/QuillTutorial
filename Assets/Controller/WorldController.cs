@@ -8,6 +8,7 @@ public class WorldController : MonoBehaviour
     public static WorldController Instance { get; private set; }
 
     public Sprite FloorSprite;
+    public Sprite EmptySprite;
 
     Dictionary<Tile, GameObject> _tileGameObjectMap;
     Dictionary<Furniture, GameObject> _furnitureGameObjectMap;
@@ -48,13 +49,14 @@ public class WorldController : MonoBehaviour
                 tileGo.transform.position = new Vector3(x, y);
                 tileGo.transform.SetParent(this.transform, true);
 
-                tileGo.AddComponent<SpriteRenderer>();
+                tileGo.AddComponent<SpriteRenderer>().sprite = EmptySprite;
                 _tileGameObjectMap.Add(tileData, tileGo);
                 tileData.TileTypeChanged += TileTypeChanged;
             }
         }
 
-        World.RandomizeTiles();
+        // Center the camera
+        Camera.main.transform.position = new Vector3(World.Width / 2, World.Height / 2, Camera.main.transform.position.z);
     }
     
     // Update is called once per frame
@@ -89,7 +91,7 @@ public class WorldController : MonoBehaviour
         switch (tile.TileType)
         {
             case TileType.Empty:
-                tileSr.sprite = null;
+                tileSr.sprite = EmptySprite;
                 break;
             case TileType.Floor:
                 tileSr.sprite = FloorSprite;
