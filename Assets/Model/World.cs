@@ -15,11 +15,22 @@ public class World
     public delegate void FurnitureCreatedHandler(Furniture obj);
     public event FurnitureCreatedHandler FurnitureCreated;
 
+    public delegate void TileChangedHandler(Tile tile);
+    public event TileChangedHandler TileChanged;
+
     private void RaiseFurnitureCreated(Furniture obj)
     {
         if (FurnitureCreated != null)
         {
             FurnitureCreated(obj);
+        }
+    }
+
+    private void RaiseTileChanged(Tile tile)
+    {
+        if (TileChanged != null)
+        {
+            TileChanged(tile);
         }
     }
 
@@ -36,6 +47,7 @@ public class World
             for (int y = 0; y < height; y++)
             {
                 _tiles[x, y] = new Tile(this, x, y);
+                _tiles[x, y].TileTypeChanged += RaiseTileChanged;
             }
         }
 

@@ -17,7 +17,7 @@ public class WorldController : MonoBehaviour
     public World World { get; private set; }
 
     // Use this for initialization
-    void Start()
+    void OnEnable()
     {
         if (Instance != null)
         {
@@ -51,9 +51,10 @@ public class WorldController : MonoBehaviour
 
                 tileGo.AddComponent<SpriteRenderer>().sprite = EmptySprite;
                 _tileGameObjectMap.Add(tileData, tileGo);
-                tileData.TileTypeChanged += TileTypeChanged;
             }
         }
+
+        World.TileChanged += OnTileChanged;
 
         // Center the camera
         Camera.main.transform.position = new Vector3(World.Width / 2, World.Height / 2, Camera.main.transform.position.z);
@@ -72,7 +73,7 @@ public class WorldController : MonoBehaviour
         return World.GetTileAt(x, y);
     }
 
-    public void TileTypeChanged(Tile tile)
+    public void OnTileChanged(Tile tile)
     {
         GameObject tileGo;
         if (!_tileGameObjectMap.TryGetValue(tile, out tileGo)) {
@@ -124,6 +125,13 @@ public class WorldController : MonoBehaviour
         obj.FurnitureChanged += OnFurnitureChanged;
     }
 
+    private void OnFurnitureChanged(Furniture furn)
+    {
+        // Make sure the furniture's graphics are correct
+        GameObject furn_go = _furnitureGameObjectMap[furn];
+        furn_go.GetComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(furn);
+    }
+
     Sprite GetSpriteForFurniture(Furniture obj)
     {
         if (obj.LinksToNeighbor == false)
@@ -165,12 +173,5 @@ public class WorldController : MonoBehaviour
         }
 
         return _furnitureSprites[spriteName];
-    }
-
-    private void OnFurnitureChanged(Furniture furn)
-    {
-        // Make sure the furniture's graphics are correct
-        GameObject furn_go = _furnitureGameObjectMap[furn];
-        furn_go.GetComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(furn);
     }
 }
