@@ -12,6 +12,17 @@ public class World
 
     public int Height { get; protected set; }
 
+    public delegate void InstalledObjectCreatedHandler(InstalledObject obj);
+    public event InstalledObjectCreatedHandler InstalledObjectCreated;
+
+    private void RaiseInstalledObjectCreated(InstalledObject obj)
+    {
+        if (InstalledObjectCreated != null)
+        {
+            InstalledObjectCreated(obj);
+        }
+    }
+
 
     public World(int width = 100, int height = 100)
     {
@@ -45,7 +56,7 @@ public class World
         {
             for (int y = 0; y < Height; y++)
             {
-                if (Random.Range(0, 2) == 0)
+                if (UnityEngine.Random.Range(0, 2) == 0)
                 {
                     _tiles[x, y].TileType = TileType.Empty;
                 }
@@ -67,8 +78,21 @@ public class World
         return _tiles[x, y];
     }
 
-    internal void PlaceInstalledObject(string _buildModeObjectType, Tile tile)
+    public bool PlaceInstalledObject(string objectType, Tile tile)
     {
-        throw new NotImplementedException();
+        InstalledObject proto;
+        if (!_installedObjectPrototypes.TryGetValue(objectType, out proto))
+        {
+            Debug.LogError("installedObjectPrototypes doesn't contain a prto for key: " + objectType);
+            return false;
+        }
+
+        var obj = InstalledObject.PlaceObject(proto, tile);
+        if (obj == null)
+        {
+            return false;
+        }
+        RaiseInstalledObjectCreated(obj);
+        return true;
     }
 }
