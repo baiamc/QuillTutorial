@@ -3,23 +3,32 @@ using System.Collections.Generic;
 
 public class WorldController : MonoBehaviour
 {
+    public static WorldController Instance { get; private set; }
+
     public Sprite FloorSprite;
 
     Dictionary<Tile, GameObject> _tileGameObjectMap;
-    World _world;
+
+    public World World { get; private set; }
 
     // Use this for initialization
     void Start()
     {
-        _world = new World();
+        if (Instance != null)
+        {
+            Debug.LogError("Should not be multiple instances of WorldController.");
+            return;
+        }
+        Instance = this;
+        World = new World();
         _tileGameObjectMap = new Dictionary<Tile, GameObject>();
 
         // Create GameObject for each tile
-        for (int x = 0; x < _world.Width; x++)
+        for (int x = 0; x < World.Width; x++)
         {
-            for (int y = 0; y < _world.Height; y++)
+            for (int y = 0; y < World.Height; y++)
             {
-                var tileData = _world.GetTileAt(x, y);
+                var tileData = World.GetTileAt(x, y);
                 var tileGo = new GameObject
                 {
                     name = "Tile_" + x + "_" + y
@@ -34,13 +43,20 @@ public class WorldController : MonoBehaviour
             }
         }
 
-        _world.RandomizeTiles();
+        World.RandomizeTiles();
     }
     
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    public Tile GetTileAtWorldCoords(Vector3 coord)
+    {
+        int x = Mathf.RoundToInt(coord.x);
+        int y = Mathf.RoundToInt(coord.y);
+        return WorldController.Instance.World.GetTileAt(x, y);
     }
 
     public void TileTypeChanged(Tile tile)
