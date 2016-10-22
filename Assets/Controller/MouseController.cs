@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using System.Linq;
 using System;
@@ -13,6 +14,8 @@ public class MouseController : MonoBehaviour
     Vector3 _leftClickDragStart;
 
     List<GameObject> _dragPreviewGameObjects;
+
+    TileType _buildModeTile = TileType.Floor;
 
     // Use this for initialization
     void Start()
@@ -32,6 +35,13 @@ public class MouseController : MonoBehaviour
 
     private void HandleLeftClick()
     {
+        // If we're over a UI element, bail out
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
+        
+
         if (Input.GetMouseButtonDown(0))
         {
             _leftClickDragStart = _currentMousePosition;
@@ -55,7 +65,7 @@ public class MouseController : MonoBehaviour
         {
             foreach (var tile in GetDragArea())
             {
-                tile.TileType = TileType.Floor;
+                tile.TileType = _buildModeTile;
             }
         }
     }
@@ -98,5 +108,15 @@ public class MouseController : MonoBehaviour
         var vector = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         vector.z = 0;
         return vector;
+    }
+
+    public void SetMode_BuildFloor()
+    {
+        _buildModeTile = TileType.Floor;
+    }
+
+    public void SetMode_Bulldoze()
+    {
+        _buildModeTile = TileType.Empty;
     }
 }
