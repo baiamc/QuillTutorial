@@ -15,6 +15,7 @@ public class MouseController : MonoBehaviour
 
     List<GameObject> _dragPreviewGameObjects;
 
+    bool _buildModeIsObject = false;
     TileType _buildModeTile = TileType.Floor;
 
     // Use this for initialization
@@ -65,7 +66,14 @@ public class MouseController : MonoBehaviour
         {
             foreach (var tile in GetDragArea())
             {
-                tile.TileType = _buildModeTile;
+                if (_buildModeIsObject)
+                {
+                    // FIXME: Right now, we're assuming all objects are walls.
+                                        
+                } else
+                {
+                    tile.TileType = _buildModeTile;
+                }
             }
         }
     }
@@ -112,11 +120,18 @@ public class MouseController : MonoBehaviour
 
     public void SetMode_BuildFloor()
     {
+        _buildModeIsObject = false;
         _buildModeTile = TileType.Floor;
     }
 
     public void SetMode_Bulldoze()
     {
+        _buildModeIsObject = false;
         _buildModeTile = TileType.Empty;
+    }
+
+    public void SetMode_BuildWall()
+    {
+        _buildModeIsObject = true;
     }
 }
