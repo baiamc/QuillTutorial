@@ -1,13 +1,18 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using System.Xml.Serialization;
+using System.IO;
 
 public class WorldController : MonoBehaviour
 {
     public static WorldController Instance { get; private set; }
 
     public World World { get; private set; }
+
+    static bool _loadWorld;
 
     // Use this for initialization
     void OnEnable()
@@ -19,16 +24,59 @@ public class WorldController : MonoBehaviour
         }
 
         Instance = this;
-        World = new World();
 
-        // Center the camera
-        Camera.main.transform.position = new Vector3(World.Width / 2, World.Height / 2, Camera.main.transform.position.z);
+        if (_loadWorld)
+        {
+
+            _loadWorld = false;
+            CreateWorldFromSaveFile();
+        }
+        else
+        {
+            CreateEmptyWorld();
+        }
+
     }
 
     void Update()
     {
         // TODO: Add pause/unpause, speed controls, etc.
         World.Update(Time.deltaTime);
+    }
+
+    private void CreateEmptyWorld()
+    {
+        World = new World(100, 100);
+
+        // Center the camera
+        Camera.main.transform.position = new Vector3(World.Width / 2, World.Height / 2, Camera.main.transform.position.z);
+    }
+
+    private void CreateWorldFromSaveFile()
+    {
+
+    }
+
+    public void NewWorld()
+    {
+        Debug.Log("NewWorld");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void SaveWorld()
+    {
+        var serializer = new XmlSerializer(typeof(World));
+        TextWriter writer = new StringWriter();
+        serializer.Serialize(writer, World);
+        writer.Close();
+        Debug.Log(writer.ToString());
+    }
+
+    public void LoadWorld()
+    {
+        // Reload the Scene
+        _loadWorld = true;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void SetupPathfindingExample()
