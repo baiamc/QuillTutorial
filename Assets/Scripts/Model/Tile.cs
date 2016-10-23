@@ -100,41 +100,36 @@ public class Tile
         return true;
     }
 
-    public IEnumerable<Tile> GetNeighbors()
+    public Tile[] GetNeighbors(bool diagOkay = false)
     {
-        Tile t = World.GetTileAt(X, Y + 1);
-        if (t != null)
+        Tile[] tiles;
+        if (diagOkay == false)
         {
-            yield return t;
+            tiles = new Tile[4];  // Tile order N E S W
+        } else
+        {
+            tiles = new Tile[8]; // Tile order N E S W NE SE SW NW
         }
 
-        t = World.GetTileAt(X + 1, Y);
-        if (t != null)
-        {
-            yield return t;
-        }
+        tiles[0] = World.GetTileAt(X, Y + 1);
+        tiles[1] = World.GetTileAt(X + 1, Y);
+        tiles[2] = World.GetTileAt(X, Y - 1);
+        tiles[3] = World.GetTileAt(X - 1, Y);
 
-        t = World.GetTileAt(X, Y - 1);
-        if (t != null)
+        if (diagOkay)
         {
-            yield return t;
+            tiles[4] = World.GetTileAt(X + 1, Y + 1);
+            tiles[5] = World.GetTileAt(X + 1, Y - 1);
+            tiles[6] = World.GetTileAt(X - 1, Y - 1);
+            tiles[7] = World.GetTileAt(X - 1, Y + 1);
         }
-
-        t = World.GetTileAt(X - 1, Y);
-        if (t != null)
-        {
-            yield return t;
-        }
+        
+        return tiles;
     }
 
     public bool IsNeighbour(Tile tile, bool diagOkay = false)
     {
-        if (this.X == tile.X && Math.Abs(this.Y - tile.Y) == 1)
-        {
-            return true;
-        }
-
-        if (this.Y == tile.Y && Math.Abs(this.X - tile.X) == 1)
+        if (Math.Abs(this.X - tile.X) + Math.Abs(this.Y - tile.Y) == 1)
         {
             return true;
         }

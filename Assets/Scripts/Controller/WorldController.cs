@@ -34,6 +34,8 @@ public class WorldController : MonoBehaviour
     public void SetupPathfindingExample()
     {
         World.SetupPathfindingExample();
+
+        var graph = new Pathfinding.TileGraph(World);
     }
 
 

@@ -9,6 +9,8 @@ public class World
     Dictionary<string, Furniture> _furniturePrototypes;
     List<Character> _characters;
 
+    Pathfinding.TileGraph tileGraph;
+
     public int Width { get; protected set; }
     public int Height { get; protected set; }
 
@@ -74,7 +76,7 @@ public class World
             for (int y = 0; y < height; y++)
             {
                 _tiles[x, y] = new Tile(this, x, y);
-                _tiles[x, y].TileTypeChanged += RaiseTileChanged;
+                _tiles[x, y].TileTypeChanged += OnTileChanged;
             }
         }
 
@@ -131,6 +133,7 @@ public class World
             return false;
         }
         RaiseFurnitureCreated(obj);
+        InvalidatePathfinding();
         return true;
     }
 
@@ -160,6 +163,17 @@ public class World
                 yield return _tiles[x, y];
             }
         }
+    }
+
+    private void OnTileChanged(Tile tile)
+    {
+        InvalidatePathfinding();
+        RaiseTileChanged(tile);
+    }
+
+    private void InvalidatePathfinding()
+    {
+        tileGraph = null;
     }
 
     public void SetupPathfindingExample()
