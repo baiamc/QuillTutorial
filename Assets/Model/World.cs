@@ -7,6 +7,7 @@ public class World
 
     Tile[,] _tiles;
     Dictionary<string, Furniture> _furniturePrototypes;
+    List<Character> _characters;
 
     public int Width { get; protected set; }
     public int Height { get; protected set; }
@@ -19,6 +20,9 @@ public class World
 
     public delegate void TileChangedHandler(Tile tile);
     public event TileChangedHandler TileChanged;
+
+    public delegate void CharacterCreatedHandler(Character character);
+    public event CharacterCreatedHandler CharacterCreated;
 
     private void RaiseFurnitureCreated(Furniture obj)
     {
@@ -35,6 +39,14 @@ public class World
             TileChanged(tile);
         }
     }
+    private void RaiseCharacterCreated(Character character)
+    {
+        if (CharacterCreated != null)
+        {
+            CharacterCreated(character);
+        }
+    }
+
 
 
     public World(int width = 100, int height = 100)
@@ -44,6 +56,7 @@ public class World
 
         _tiles = new Tile[Width, Height];
         JobQueue = new JobQueue();
+        _characters = new List<Character>();
 
         for (int x = 0; x < width; x++)
         {
@@ -55,6 +68,11 @@ public class World
         }
 
         CreateFurniturePrototypes();
+    }
+    public void CreateCharacter(Tile tile)
+    {
+        var c = new Character(_tiles[Width / 2, Height / 2]);
+        RaiseCharacterCreated(c);
     }
 
     private void CreateFurniturePrototypes()

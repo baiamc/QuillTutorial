@@ -33,7 +33,9 @@ public class TileSpriteController : MonoBehaviour
                 tileGo.transform.position = new Vector3(x, y);
                 tileGo.transform.SetParent(this.transform, true);
 
-                tileGo.AddComponent<SpriteRenderer>().sprite = EmptySprite;
+                var sr = tileGo.AddComponent<SpriteRenderer>();
+                sr.sprite = EmptySprite;
+                sr.sortingLayerName = "Tiles";
                 _tileGameObjectMap.Add(tileData, tileGo);
             }
         }

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public enum TileType { Empty, Floor }
 
@@ -107,5 +108,28 @@ public class Tile
         {
             yield return t;
         }
+    }
+
+    public bool IsNeighbour(Tile tile, bool diagOkay = false)
+    {
+        if (this.X == tile.X && Math.Abs(this.Y - tile.Y) == 1)
+        {
+            return true;
+        }
+
+        if (this.Y == tile.Y && Math.Abs(this.X - tile.X) == 1)
+        {
+            return true;
+        }
+
+        if (diagOkay)
+        {
+            if (Math.Abs(this.X - tile.X) == 1 && Math.Abs(this.Y - tile.Y) == 1)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
