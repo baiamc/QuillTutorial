@@ -13,7 +13,7 @@ public class Furniture {
 
     // This is a multiplier so a value of 2 means you move twice as slowly (ie at half speed)
     // SPECIAL: If _movementCost is 0, then this tile is impassible (e.g. a wall)
-    float _movementCost;
+    public float MovementCost { get; protected set; }
 
     int _width;
     int _height;
@@ -45,7 +45,7 @@ public class Furniture {
         var furn = new Furniture
         {
             FurnitureType = furnitureType,
-            _movementCost = movementCost,
+            MovementCost = movementCost,
             _width = width,
             _height = height,
             LinksToNeighbor = linksToNeighbor
@@ -67,7 +67,7 @@ public class Furniture {
         var furn = new Furniture
         {
             FurnitureType = proto.FurnitureType,
-            _movementCost = proto._movementCost,
+            MovementCost = proto.MovementCost,
             _width = proto._width,
             _height = proto._height,
             LinksToNeighbor = proto.LinksToNeighbor,

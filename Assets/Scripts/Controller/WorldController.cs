@@ -30,7 +30,13 @@ public class WorldController : MonoBehaviour
         // TODO: Add pause/unpause, speed controls, etc.
         World.Update(Time.deltaTime);
     }
-    
+
+    public void SetupPathfindingExample()
+    {
+        World.SetupPathfindingExample();
+    }
+
+
     public Tile GetTileAtWorldCoords(Vector3 coord)
     {
         int x = Mathf.RoundToInt(coord.x);

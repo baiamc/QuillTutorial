@@ -102,7 +102,7 @@ public class World
     {
         _furniturePrototypes = new Dictionary<string, Furniture>();
 
-        _furniturePrototypes.Add("Wall", 
+        _furniturePrototypes.Add("Wall",
             Furniture.CreatePrototype("Wall", 0f, 1, 1, true));
     }
 
@@ -149,5 +149,38 @@ public class World
         }
 
         return furn;
+    }
+
+    public IEnumerable<Tile> Tiles()
+    {
+        for (int x = 0; x < Width; x++)
+        {
+            for (int y = 0; y < Height; y++)
+            {
+                yield return _tiles[x, y];
+            }
+        }
+    }
+
+    public void SetupPathfindingExample()
+    {
+        int l = Width / 2 - 5;
+        int b = Height / 2 - 5;
+
+        for (int x = l - 5; x < l + 15; x++)
+        {
+            for (int y = b - 5; y < b + 15; y++)
+            {
+                _tiles[x, y].TileType = TileType.Floor;
+
+                if (x == l || x == (l + 9) || y == b || y == (b + 9))
+                {
+                    if (x != (l + 9) && y != (b + 4))
+                    {
+                        PlaceFurniture("Wall", _tiles[x, y]);
+                    }
+                }
+            }
+        }
     }
 }

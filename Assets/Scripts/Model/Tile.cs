@@ -36,6 +36,23 @@ public class Tile
 
     public int Y { get; protected set; }
 
+    public float MovementCost
+    {
+        get
+        {
+            if (_tileType == TileType.Empty)
+            {
+                return 0;
+            }
+            if (Furniture == null)
+            {
+                return 1;
+            }
+
+            return Furniture.MovementCost;
+        }
+    }
+
     public Furniture Furniture
     {
         get
