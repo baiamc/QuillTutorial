@@ -13,14 +13,13 @@ namespace Pathfinding
 
             foreach (var tile in world.Tiles())
             {
-                if (tile.MovementCost > 0)
-                {
-                    Node<Tile> node = new Node<Tile>();
-                    node.Data = tile;
-                    Nodes.Add(tile, node);
 
-                    Debug.DrawLine(new Vector3(tile.X - 0.1f, tile.Y - 0.25f, 0), new Vector3(tile.X + 0.1f, tile.Y + 0.25f, 0), Color.red, 999f);
-                }
+                Node<Tile> node = new Node<Tile>();
+                node.Data = tile;
+                Nodes.Add(tile, node);
+
+                Debug.DrawLine(new Vector3(tile.X - 0.1f, tile.Y - 0.25f, 0), new Vector3(tile.X + 0.1f, tile.Y + 0.25f, 0), Color.red, 999f);
+
             }
 
             foreach (var node in Nodes.Values)

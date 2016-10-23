@@ -20,11 +20,13 @@ namespace Pathfinding
             if (nodeMap.ContainsKey(tileStart) == false)
             {
                 Debug.LogError("AStar: Start tile isn't int he list of tiles");
+                return;
             }
 
             if (nodeMap.ContainsKey(tileEnd) == false)
             {
                 Debug.LogError("AStar: End tile isn't int he list of tiles");
+                return;
             }
 
             var start = nodeMap[tileStart];
@@ -67,7 +69,7 @@ namespace Pathfinding
                         continue; // Neighbor already checked
                     }
 
-                    float tentativeGScore = gScore[current] + DistBetweenNeighbors(current, neighbor);
+                    float tentativeGScore = gScore[current] + DistBetweenNeighbors(current, neighbor) * neighbor.Data.MovementCost;
 
                     if (openSet.Contains(neighbor) && tentativeGScore > gScore[neighbor])
                     {
@@ -120,9 +122,18 @@ namespace Pathfinding
             return Mathf.Sqrt(Mathf.Pow(a.Data.X - b.Data.X, 2) + Mathf.Pow(a.Data.Y - b.Data.Y, 2));
         }
 
-        public Tile GetNextTile()
+        public Tile Dequeue()
         {
+            if (_path == null || _path.Count == 0)
+            {
+                return null;
+            }
             return _path.Pop();
+        }
+
+        public int Length()
+        {
+            return _path.Count;
         }
     }
 }
