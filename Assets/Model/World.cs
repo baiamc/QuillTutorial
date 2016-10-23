@@ -24,6 +24,9 @@ public class World
     public delegate void CharacterCreatedHandler(Character character);
     public event CharacterCreatedHandler CharacterCreated;
 
+    public delegate void CharacterChangedHandler(Character character);
+    public event CharacterChangedHandler CharacterChanged;
+
     private void RaiseFurnitureCreated(Furniture obj)
     {
         if (FurnitureCreated != null)
@@ -44,6 +47,14 @@ public class World
         if (CharacterCreated != null)
         {
             CharacterCreated(character);
+        }
+    }
+
+    private void RaiseCharacterChanged(Character character)
+    {
+        if (CharacterChanged != null)
+        {
+            CharacterChanged(character);
         }
     }
 
@@ -69,10 +80,22 @@ public class World
 
         CreateFurniturePrototypes();
     }
-    public void CreateCharacter(Tile tile)
+
+    public void Update(float deltaTime)
+    {
+        foreach (var c in _characters)
+        {
+            c.Update(deltaTime);
+        }
+    }
+
+    public Character CreateCharacter(Tile tile)
     {
         var c = new Character(_tiles[Width / 2, Height / 2]);
+        _characters.Add(c);
+        c.CharacterChanged += RaiseCharacterChanged;
         RaiseCharacterCreated(c);
+        return c;
     }
 
     private void CreateFurniturePrototypes()

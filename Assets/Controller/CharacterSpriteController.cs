@@ -18,7 +18,8 @@ public class CharacterSpriteController : MonoBehaviour {
 
         World.CharacterCreated += OnCharacterCreated;
 
-        World.CreateCharacter(World.GetTileAt(World.Width / 2, World.Height / 2));
+        // DEBUG
+        var c = World.CreateCharacter(World.GetTileAt(World.Width / 2, World.Height / 2));
     }
 
     public void OnCharacterCreated(Character character)
@@ -32,7 +33,7 @@ public class CharacterSpriteController : MonoBehaviour {
             name = "Character"
         };
 
-        tileGo.transform.position = new Vector3(character.CurrTile.X, character.CurrTile.Y);
+        tileGo.transform.position = new Vector3(character.X, character.Y);
         tileGo.transform.SetParent(this.transform, true);
 
         var tileSr = tileGo.AddComponent<SpriteRenderer>();
@@ -40,15 +41,21 @@ public class CharacterSpriteController : MonoBehaviour {
         tileSr.sortingLayerName = "Characters";
 
         _characterGameObjectMap.Add(character, tileGo);
-        //character.CharacterChanged += OnFurnitureChanged;
+        World.CharacterChanged += OnCharacterChanged;
     }
 
-    //private void OnCharacterChanged(Character character)
-    //{
-    //    // Make sure the furniture's graphics are correct
-    //    GameObject furn_go = _characterGameObjectMap[character];
-    //    furn_go.GetComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(character);
-    //}
+    private void OnCharacterChanged(Character character)
+    {
+        // Make sure the furniture's graphics are correct
+        GameObject char_go;
+        if (_characterGameObjectMap.TryGetValue(character, out char_go) == false)
+        {
+            Debug.LogError("OnCharacter Changed: Tried to update vsuals for character not in our map.");
+        }
+
+        char_go.transform.position = new Vector3(character.X, character.Y);
+        
+    }
 
     //public Sprite GetSpriteForFurniture(Furniture obj)
     //{

@@ -24,6 +24,12 @@ public class WorldController : MonoBehaviour
         // Center the camera
         Camera.main.transform.position = new Vector3(World.Width / 2, World.Height / 2, Camera.main.transform.position.z);
     }
+
+    void Update()
+    {
+        // TODO: Add pause/unpause, speed controls, etc.
+        World.Update(Time.deltaTime);
+    }
     
     public Tile GetTileAtWorldCoords(Vector3 coord)
     {

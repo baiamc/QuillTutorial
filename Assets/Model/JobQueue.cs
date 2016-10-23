@@ -54,6 +54,15 @@ public class JobQueue {
         job.JobCanceled += OnJobCanceled;
     }
 
+    public Job Dequeue()
+    {
+        if (_jobQueue.Count == 0)
+        {
+            return null;
+        }
+        return _jobQueue.Dequeue();
+    }
+
     private void OnJobCanceled(Job job)
     {
         RaiseJobCanceled(job);
