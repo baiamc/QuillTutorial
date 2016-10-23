@@ -20,6 +20,12 @@ public class JobSpriteController : MonoBehaviour {
 	
 	void OnJobCreated(Job job)
     {
+        if (_jobGameObjectMap.ContainsKey(job))
+        {
+            Debug.LogError("JobObject already exists.  Job was most likely requeued.");
+            return;
+        }
+
         var jobGo = new GameObject
         {
             name = "JOB_" + job.Tile.X + "_" + job.Tile.Y

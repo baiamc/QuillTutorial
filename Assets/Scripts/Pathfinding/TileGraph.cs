@@ -33,6 +33,15 @@ namespace Pathfinding
                         continue;
                     }
 
+                    // Don't allow diagonal movement (clipping) through unwalkable blocks
+                    if (node.Data.X != neighbours[i].X && node.Data.Y != neighbours[i].Y)
+                    {
+                        if (world.GetTileAt(neighbours[i].X, node.Data.Y).MovementCost == 0 || world.GetTileAt(node.Data.X, neighbours[i].Y).MovementCost == 0)
+                        {
+                            continue;
+                        }
+                    }
+
                     var edge = new Edge<Tile>
                     {
                         Cost = neighbours[i].MovementCost,

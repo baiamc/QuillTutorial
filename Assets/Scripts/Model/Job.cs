@@ -17,7 +17,7 @@ public class Job {
 
     public string JobObjectType { get; protected set; }
 
-    public Job(Tile tile, string jobObjectType, float jobTime = 1f)
+    public Job(Tile tile, string jobObjectType, float jobTime = 0.1f)
     {
         Tile = tile;
         JobObjectType = jobObjectType;

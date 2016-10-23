@@ -35,7 +35,7 @@ public class Character {
     public Tile NextTile { get; protected set; } // Next tile in pathfinding
     float movementPercentage;
 
-    float speed = 2f; // Moves 2 tiles per second
+    float speed = 5f; // Moves 2 tiles per second
     Pathfinding.AStar _pathAStar;
 
     Job myJob;
@@ -108,8 +108,7 @@ public class Character {
             if (NextTile == null)
             {
                 Debug.LogError("Character::HandleMovement could not find path to destination");
-                // Do something with the Job?
-                _pathAStar = null;
+                AbandonJob();
                 return;
             }
         }
@@ -138,6 +137,8 @@ public class Character {
         _pathAStar = null;
         if (myJob != null)
         {
+            myJob.JobComplete -= OnJobFinished;
+            myJob.JobCanceled -= OnJobFinished;
             CurrTile.World.JobQueue.Enqueue(myJob);
         }
 
