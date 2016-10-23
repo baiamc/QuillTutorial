@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 
-public class FurnatureSpriteController : MonoBehaviour
+public class FurnitureSpriteController : MonoBehaviour
 {
     Dictionary<Furniture, GameObject> _furnitureGameObjectMap;
     Dictionary<string, Sprite> _furnitureSprites;
@@ -49,7 +49,7 @@ public class FurnatureSpriteController : MonoBehaviour
         furn_go.GetComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(furn);
     }
 
-    Sprite GetSpriteForFurniture(Furniture obj)
+    public Sprite GetSpriteForFurniture(Furniture obj)
     {
         if (obj.LinksToNeighbor == false)
         {
@@ -90,5 +90,22 @@ public class FurnatureSpriteController : MonoBehaviour
         }
 
         return _furnitureSprites[spriteName];
+    }
+
+    public Sprite GetSpriteForFurniture(string objectType)
+    {
+        Sprite sprite;
+        if (_furnitureSprites.TryGetValue(objectType, out sprite))
+        {
+            return sprite;
+        }
+
+        if (_furnitureSprites.TryGetValue(objectType + "_", out sprite))
+        {
+            return sprite;
+        }
+
+        Debug.LogError("GetSpriteForFurniture: No sprites with name: " + objectType);
+        return null;
     }
 }

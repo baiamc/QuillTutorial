@@ -15,9 +15,12 @@ public class Job {
     public delegate void JobCanceledHandler(Job job);
     public event JobCanceledHandler JobCanceled;
 
-    public Job(Tile tile, float jobTime = 1f)
+    public string JobObjectType { get; protected set; }
+
+    public Job(Tile tile, string jobObjectType, float jobTime = 1f)
     {
         Tile = tile;
+        JobObjectType = jobObjectType;
         JobTime = jobTime;
     }
 

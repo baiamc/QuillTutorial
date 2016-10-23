@@ -20,22 +20,17 @@ public class BuildModeController : MonoBehaviour
     {
         if (_buildModeIsFurniture)
         {
-            if (WorldController.Instance.World.IsFurnaturePlacementValid(_buildModeFurnitureType, tile) == false
-                && tile.PendingFurnatureJob == null)
+            if (WorldController.Instance.World.IsFurniturePlacementValid(_buildModeFurnitureType, tile) == false
+                || tile.PendingFurnatureJob != null)
             {
                 return;
             }
 
-            Job job = new Job(tile);
-            tile.PendingFurnatureJob = job;
+            Job job = new Job(tile, _buildModeFurnitureType);
             string furnatureType = _buildModeFurnitureType;
-            job.JobComplete += (j) => {
-                WorldController.Instance.World.PlaceFurniture(furnatureType, tile);
-                tile.PendingFurnatureJob = null;
-            };
-            job.JobCanceled += (j) => tile.PendingFurnatureJob = null;
+            job.JobComplete += (j) =>  WorldController.Instance.World.PlaceFurniture(furnatureType, tile);
 
-            WorldController.Instance.World.jobQueue.Enqueue(job);
+            WorldController.Instance.World.JobQueue.Enqueue(job);
 
         }
         else

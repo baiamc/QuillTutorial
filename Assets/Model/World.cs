@@ -12,7 +12,7 @@ public class World
     public int Height { get; protected set; }
 
     // TODO: Most likely replaced with a dedicated class for managing job queues
-    public Queue<Job> jobQueue;
+    public JobQueue JobQueue { get; protected set; }
 
     public delegate void FurnitureCreatedHandler(Furniture obj);
     public event FurnitureCreatedHandler FurnitureCreated;
@@ -43,7 +43,7 @@ public class World
         Height = height;
 
         _tiles = new Tile[Width, Height];
-        jobQueue = new Queue<Job>();
+        JobQueue = new JobQueue();
 
         for (int x = 0; x < width; x++)
         {
@@ -93,8 +93,20 @@ public class World
         return true;
     }
 
-    public bool IsFurnaturePlacementValid(string furnatureType, Tile tile)
+    public bool IsFurniturePlacementValid(string furnatureType, Tile tile)
     {
         return _furniturePrototypes[furnatureType].IsPositionValid(tile);
+    }
+
+    public Furniture GetFurniturePrototype(string objectType)
+    {
+        Furniture furn;
+        if (_furniturePrototypes.TryGetValue(objectType, out furn))
+        {
+            Debug.LogError("GetFurniturePrototype: No furniture of type: " + objectType);
+            return null;
+        }
+
+        return furn;
     }
 }
