@@ -5,11 +5,11 @@ namespace Pathfinding
 {
     public class TileGraph
     {
-        Dictionary<Tile, Node<Tile>> _nodes;
+        public Dictionary<Tile, Node<Tile>> Nodes;
 
         public TileGraph(World world)
         {
-            _nodes = new Dictionary<Tile, Node<Tile>>();
+            Nodes = new Dictionary<Tile, Node<Tile>>();
 
             foreach (var tile in world.Tiles())
             {
@@ -17,13 +17,13 @@ namespace Pathfinding
                 {
                     Node<Tile> node = new Node<Tile>();
                     node.Data = tile;
-                    _nodes.Add(tile, node);
+                    Nodes.Add(tile, node);
 
                     Debug.DrawLine(new Vector3(tile.X - 0.1f, tile.Y - 0.25f, 0), new Vector3(tile.X + 0.1f, tile.Y + 0.25f, 0), Color.red, 999f);
                 }
             }
 
-            foreach (var node in _nodes.Values)
+            foreach (var node in Nodes.Values)
             {
                 var list = new List<Edge<Tile>>();
                 var neighbours = node.Data.GetNeighbors(true);
@@ -37,7 +37,7 @@ namespace Pathfinding
                     var edge = new Edge<Tile>
                     {
                         Cost = neighbours[i].MovementCost,
-                        Node = _nodes[neighbours[i]]
+                        Node = Nodes[neighbours[i]]
                     };
                     list.Add(edge);
 

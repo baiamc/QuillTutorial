@@ -9,7 +9,7 @@ public class World
     Dictionary<string, Furniture> _furniturePrototypes;
     List<Character> _characters;
 
-    Pathfinding.TileGraph tileGraph;
+    public Pathfinding.TileGraph TileGraph;
 
     public int Width { get; protected set; }
     public int Height { get; protected set; }
@@ -173,7 +173,7 @@ public class World
 
     private void InvalidatePathfinding()
     {
-        tileGraph = null;
+        TileGraph = null;
     }
 
     public void SetupPathfindingExample()
