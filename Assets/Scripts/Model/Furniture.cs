@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using System;
+using System.Xml;
 
 public class Furniture {
 
@@ -122,4 +123,15 @@ public class Furniture {
         return true;
     }
 
+    public void WriteXml(XmlWriter writer)
+    {
+        writer.WriteAttributeString("Type", FurnitureType);
+        writer.WriteAttributeString("X", Tile.X.ToString());
+        writer.WriteAttributeString("Y", Tile.Y.ToString());
+    }
+
+    public void ReadXml(XmlReader reader)
+    {
+        // Not used yet, but needed later for more complicated furniture
+    }
 }

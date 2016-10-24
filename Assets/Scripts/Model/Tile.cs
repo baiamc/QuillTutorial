@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 
 public enum TileType { Empty, Floor }
 
-public class Tile : IXmlSerializable
+public class Tile
 {
 
     TileType _tileType = TileType.Empty;
@@ -150,11 +150,6 @@ public class Tile : IXmlSerializable
     }
 
     #region Save/Load Code
-
-    public XmlSchema GetSchema()
-    {
-        return null;
-    }
 
     public void ReadXml(XmlReader reader)
     {

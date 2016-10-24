@@ -11,6 +11,7 @@ public class World : IXmlSerializable
     Tile[,] _tiles;
     Dictionary<string, Furniture> _furniturePrototypes;
     List<Character> _characters;
+    List<Furniture> _furnitures;
 
     public Pathfinding.TileGraph TileGraph;
 
@@ -68,6 +69,7 @@ public class World : IXmlSerializable
     public World(int width, int height)
     {
         SetupWorld(width, height);
+        CreateCharacter(_tiles[Width / 2, Height / 2]);
     }
 
     private void SetupWorld(int width, int height)
@@ -78,6 +80,7 @@ public class World : IXmlSerializable
         _tiles = new Tile[Width, Height];
         JobQueue = new JobQueue();
         _characters = new List<Character>();
+        _furnitures = new List<Furniture>();
 
         for (int x = 0; x < width; x++)
         {
@@ -101,7 +104,7 @@ public class World : IXmlSerializable
 
     public Character CreateCharacter(Tile tile)
     {
-        var c = new Character(_tiles[Width / 2, Height / 2]);
+        var c = new Character(tile);
         _characters.Add(c);
         c.CharacterChanged += RaiseCharacterChanged;
         RaiseCharacterCreated(c);
@@ -126,23 +129,24 @@ public class World : IXmlSerializable
         return _tiles[x, y];
     }
 
-    public bool PlaceFurniture(string furnitureType, Tile tile)
+    public Furniture PlaceFurniture(string furnitureType, Tile tile)
     {
         Furniture proto;
         if (!_furniturePrototypes.TryGetValue(furnitureType, out proto))
         {
             Debug.LogError("_furniturePrototypes doesn't contain a proto for key: " + furnitureType);
-            return false;
+            return null;
         }
 
-        var obj = Furniture.PlaceInstance(proto, tile);
-        if (obj == null)
+        var furn = Furniture.PlaceInstance(proto, tile);
+        if (furn == null)
         {
-            return false;
+            return null;
         }
-        RaiseFurnitureCreated(obj);
+        _furnitures.Add(furn);
+        RaiseFurnitureCreated(furn);
         InvalidatePathfinding();
-        return true;
+        return furn;
     }
 
     public bool IsFurniturePlacementValid(string furnatureType, Tile tile)
@@ -171,6 +175,16 @@ public class World : IXmlSerializable
                 yield return _tiles[x, y];
             }
         }
+    }
+
+    public IEnumerable<Furniture> FurnitureList()
+    {
+        return _furnitures;
+    }
+
+    public IEnumerable<Character> Characters()
+    {
+        return _characters;
     }
 
     private void OnTileChanged(Tile tile)
@@ -223,16 +237,68 @@ public class World : IXmlSerializable
         SetupWorld(int.Parse(reader.GetAttribute("Width")), int.Parse(reader.GetAttribute("Height")));
         reader.MoveToElement();
 
-        reader.ReadToDescendant("Tiles");
-        reader.ReadToDescendant("Tile");
-        while (reader.IsStartElement("Tile"))
+        while (reader.Read())
         {
+            switch (reader.Name)
+            {
+                case "Tiles":
+                    ReadXml_Tiles(reader);
+                    break;
+                case "Furnitures":
+                    ReadXml_Furniture(reader);
+                    break;
+                case "Characters":
+                    ReadXml_Characters(reader);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    public void ReadXml_Tiles(XmlReader reader)
+    {
+        while (reader.Read())
+        {
+            if (reader.Name != "Tile")
+            {
+                return;
+            }
             int x = int.Parse(reader.GetAttribute("X"));
             int y = int.Parse(reader.GetAttribute("Y"));
             _tiles[x, y].ReadXml(reader);
+        }
+    }
 
-            reader.ReadToNextSibling("Tile");
+    private void ReadXml_Furniture(XmlReader reader)
+    {
+        while (reader.Read())
+        {
+            if (reader.Name != "Furniture")
+            {
+                return;
+            }
 
+            int x = int.Parse(reader.GetAttribute("X"));
+            int y = int.Parse(reader.GetAttribute("Y"));
+            string type = reader.GetAttribute("Type");
+            var furn = PlaceFurniture(type, _tiles[x, y]);
+            furn.ReadXml(reader);
+        }
+    }
+
+    private void ReadXml_Characters(XmlReader reader)
+    {
+        while (reader.Read())
+        {
+            if (reader.Name != "Character")
+            {
+                return;
+            }
+
+            int x = int.Parse(reader.GetAttribute("X"));
+            int y = int.Parse(reader.GetAttribute("Y"));
+            var c = CreateCharacter(_tiles[x, y]);
         }
     }
 
@@ -246,6 +312,24 @@ public class World : IXmlSerializable
         {
             writer.WriteStartElement("Tile");
             tile.WriteXml(writer);
+            writer.WriteEndElement();
+        }
+        writer.WriteEndElement();
+
+        writer.WriteStartElement("Furnitures");
+        foreach (var furn in FurnitureList())
+        {
+            writer.WriteStartElement("Furniture");
+            furn.WriteXml(writer);
+            writer.WriteEndElement();
+        }
+        writer.WriteEndElement();
+
+        writer.WriteStartElement("Characters");
+        foreach (var c in _characters)
+        {
+            writer.WriteStartElement("Character");
+            c.WriteXml(writer);
             writer.WriteEndElement();
         }
         writer.WriteEndElement();

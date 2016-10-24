@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
+using System.Xml;
 
 public class Character {
 
@@ -154,4 +156,19 @@ public class Character {
         myJob = null;
 
     }
+
+    #region Save/Load Code
+
+    public void WriteXml(XmlWriter writer)
+    {
+        writer.WriteAttributeString("X", CurrTile.X.ToString());
+        writer.WriteAttributeString("Y", CurrTile.Y.ToString());
+    }
+
+    public void ReadXml(XmlReader reader)
+    {
+
+    }
+
+    #endregion
 }

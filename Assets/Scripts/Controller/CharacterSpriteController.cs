@@ -16,10 +16,11 @@ public class CharacterSpriteController : MonoBehaviour {
 
         _characterGameObjectMap = new Dictionary<Character, GameObject>();
 
+        foreach (var c in World.Characters())
+        {
+            OnCharacterCreated(c);
+        }
         World.CharacterCreated += OnCharacterCreated;
-
-        // DEBUG
-        var c = World.CreateCharacter(World.GetTileAt(World.Width / 2, World.Height / 2));
     }
 
     public void OnCharacterCreated(Character character)

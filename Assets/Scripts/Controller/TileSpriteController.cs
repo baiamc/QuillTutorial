@@ -37,6 +37,8 @@ public class TileSpriteController : MonoBehaviour
                 sr.sprite = EmptySprite;
                 sr.sortingLayerName = "Tiles";
                 _tileGameObjectMap.Add(tileData, tileGo);
+
+                OnTileChanged(tileData);
             }
         }
     }
