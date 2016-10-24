@@ -2,10 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
 
 public enum TileType { Empty, Floor }
 
-public class Tile
+public class Tile : IXmlSerializable
 {
 
     TileType _tileType = TileType.Empty;
@@ -106,7 +109,8 @@ public class Tile
         if (diagOkay == false)
         {
             tiles = new Tile[4];  // Tile order N E S W
-        } else
+        }
+        else
         {
             tiles = new Tile[8]; // Tile order N E S W NE SE SW NW
         }
@@ -123,7 +127,7 @@ public class Tile
             tiles[6] = World.GetTileAt(X - 1, Y - 1);
             tiles[7] = World.GetTileAt(X - 1, Y + 1);
         }
-        
+
         return tiles;
     }
 
@@ -144,4 +148,25 @@ public class Tile
 
         return false;
     }
+
+    #region Save/Load Code
+
+    public XmlSchema GetSchema()
+    {
+        return null;
+    }
+
+    public void ReadXml(XmlReader reader)
+    {
+        TileType = (TileType)Enum.Parse(typeof(TileType), reader.GetAttribute("Type"));
+    }
+
+    public void WriteXml(XmlWriter writer)
+    {
+        writer.WriteAttributeString("Type", TileType.ToString());
+        writer.WriteAttributeString("X", X.ToString());
+        writer.WriteAttributeString("Y", Y.ToString());
+    }
+
+    #endregion
 }

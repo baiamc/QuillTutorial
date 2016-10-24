@@ -1,9 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
 using System.Collections.Generic;
-using System;
-using System.Xml.Serialization;
 using System.Xml;
 using System.Xml.Schema;
+using System.Xml.Serialization;
+using UnityEngine;
 
 public class World : IXmlSerializable
 {
@@ -66,6 +66,11 @@ public class World : IXmlSerializable
 
 
     public World(int width, int height)
+    {
+        SetupWorld(width, height);
+    }
+
+    private void SetupWorld(int width, int height)
     {
         Width = width;
         Height = height;
@@ -215,13 +220,35 @@ public class World : IXmlSerializable
 
     public void ReadXml(XmlReader reader)
     {
-        
+        SetupWorld(int.Parse(reader.GetAttribute("Width")), int.Parse(reader.GetAttribute("Height")));
+        reader.MoveToElement();
+
+        reader.ReadToDescendant("Tiles");
+        reader.ReadToDescendant("Tile");
+        while (reader.IsStartElement("Tile"))
+        {
+            int x = int.Parse(reader.GetAttribute("X"));
+            int y = int.Parse(reader.GetAttribute("Y"));
+            _tiles[x, y].ReadXml(reader);
+
+            reader.ReadToNextSibling("Tile");
+
+        }
     }
 
     public void WriteXml(XmlWriter writer)
     {
         writer.WriteAttributeString("Width", Width.ToString());
         writer.WriteAttributeString("Height", Height.ToString());
+
+        writer.WriteStartElement("Tiles");
+        foreach (var tile in Tiles())
+        {
+            writer.WriteStartElement("Tile");
+            tile.WriteXml(writer);
+            writer.WriteEndElement();
+        }
+        writer.WriteEndElement();
     }
 
     #endregion

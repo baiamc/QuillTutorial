@@ -36,6 +36,8 @@ public class WorldController : MonoBehaviour
             CreateEmptyWorld();
         }
 
+        // Center the camera
+        Camera.main.transform.position = new Vector3(World.Width / 2, World.Height / 2, Camera.main.transform.position.z);
     }
 
     void Update()
@@ -47,14 +49,15 @@ public class WorldController : MonoBehaviour
     private void CreateEmptyWorld()
     {
         World = new World(100, 100);
-
-        // Center the camera
-        Camera.main.transform.position = new Vector3(World.Width / 2, World.Height / 2, Camera.main.transform.position.z);
     }
 
     private void CreateWorldFromSaveFile()
     {
-
+        string worldSave = PlayerPrefs.GetString("SaveGame00");
+        var serializer = new XmlSerializer(typeof(World));
+        var reader = new StringReader(worldSave);
+        World = (World)serializer.Deserialize(reader);
+        reader.Close();
     }
 
     public void NewWorld()
@@ -70,6 +73,9 @@ public class WorldController : MonoBehaviour
         serializer.Serialize(writer, World);
         writer.Close();
         Debug.Log(writer.ToString());
+
+        PlayerPrefs.SetString("SaveGame00", writer.ToString());
+        PlayerPrefs.Save();
     }
 
     public void LoadWorld()
